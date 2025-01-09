@@ -1,8 +1,20 @@
+<?php
+    include "../koneksi.php";
+
+    $query = "SELECT p.*, c.jenis_product FROM products p
+        LEFT JOIN categories c ON p.category = c.id";
+    $products = $conn->query($query);
+
+    // Query kategori untuk dropdown
+    $categoryQuery = "SELECT id, jenis_product FROM categories";
+    $categories = $conn->query($categoryQuery);
+?>
+
 <!doctype html>
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
+    <!-- Meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -13,30 +25,6 @@
     <link rel="stylesheet" href="../css/style.css">
 
     <title>Dashboard</title>
-    <style>
-    .main-container {
-        display: flex;
-        flex-direction: row;
-        min-height: 100vh;
-    }
-
-    .sidebar.close {
-        width: 70px;
-    }
-
-    .content {
-        flex: 1;
-        padding: 20px;
-        margin-left: 250px;
-        transition: margin-left 0.3s;
-    }
-
-    .sidebar.close + .content {
-        margin-left: 70px;
-    }
-</style>
-
-    
 </head>
 
 <body>
@@ -61,25 +49,25 @@
                 </li>
                 <ul class="menu-links">
                     <li class="nav-link">
-                        <a href="">
+                        <a href="./Dashboard.php">
                             <i class='bx bx-home-alt icon'></i>
                             <span class="text nav-text">Dashboard</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="">
+                        <a href="./Category.php">
                             <i class='bx bx-food-menu icon'></i>
                             <span class="text nav-text">Category</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="">
+                        <a href="./Product.php">
                             <i class='bx bx-food-menu icon'></i>
                             <span class="text nav-text">Product</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="">
+                        <a href="./Order.php">
                             <i class='bx bx-cart icon'></i>
                             <span class="text nav-text">Order</span>
                         </a>
@@ -136,114 +124,155 @@
             </div>
         </div>
     </nav>
-
-    <div class="content p-4" style="width: 100psh;">
-        <h1 class="mb-4">Product List</h1>
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="input-group" style="width: 300px;">
-                <input type="text" id="search-bar" class="form-control" placeholder="Search product...">
-                <button class="btn btn-outline-secondary" onclick="searchProduct()">Search</button>
-            </div>
-            <button type="button" class="btn btn-danger" onclick="window.location.href='/admin/Create'">Cancel</button>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-borderless bg-white">
-                <thead class="table-dark text-center">
+    <section class="home">
+        <div class="text">Product</div>
+        <div class="content mx-5">
+            <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Add Product</button>
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-                        <th>Image</th>  
-                        <th>Nama Product</th>
-                        <th>Harga</th>
-                        <th>Stok</th>
-                        <th>Kategori</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th style="">ID</th>
+                        <th>Image</th>
+                        <th style="width: 200px;">Product Name</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody class="text-center align-middle" id="product-table">
-                    <tr>
-                        <td><img src="https://raw.githubusercontent.com/muhamadhusnaya/Organicstation/refs/heads/main/images/produk1.png" alt="" style="width: 100px;"></td>
-                        <td>Susu Kedelai Organik</td>
-                        <td>Rp. 78,000</td>
-                        <td>10</td>
-                        <td>Minuman</td>
-                        <td><button class="btn btn-success"><i class='bx bx-edit'></i></button></td>
-                        <td><button class="btn btn-danger"><i class='bx bx-trash'></i></button></td>
-                    </tr>
-                    <tr>
-                        <td><img src="https://raw.githubusercontent.com/muhamadhusnaya/Organicstation/refs/heads/main/images/produk1.png" alt="" style="width: 100px;"></td>
-                        <td>Susu Kedelai Organik</td>
-                        <td>Rp. 78,000</td>
-                        <td>10</td>
-                        <td>Minuman</td>
-                        <td><button class="btn btn-success"><i class='bx bx-edit'></i></button></td>
-                        <td><button class="btn btn-danger"><i class='bx bx-trash'></i></button></td>
-                    </tr>
-                    <!-- Modal Edit -->
-                    <div class="modal fade" id="modal-edit<?= $data['id_mhs'] ?>" tabindex="-1" aria-labelledby="editLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Edit Data Mahasiswa</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <tbody>
+                    <?php while ($row = $products->fetch_assoc()): ?>
+                        <tr>
+                            <td><?= $row['id'] ?></td>
+                            <td>
+                                <?php if (!empty($row['image'])): ?>
+                                    <img width="60px" src="../img/Product/<?= $row['image'] ?>">
+                                <?php else: ?>
+                                    No Image
+                                <?php endif; ?>
+                            </td>
+                            <td><?= $row['product_name'] ?></td>
+                            <td><?= $row['price'] ?></td>
+                            <td><?= $row['stock'] ?></td>
+                            <td><?= $row['jenis_product'] ?></td>
+                            <td><?= $row['description'] ?></td>
+                            <td>
+                                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal<?= $row['id'] ?>">Edit</button>
+                                <a href="aksi_crud.php?product_action=delete&id=<?= $row['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                            </td>
+                        </tr>
+
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editModal<?= $row['id'] ?>" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Product</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form action="./aksi_crud.php" method="post" enctype="multipart/form-data">
+                                        <div class="modal-body">
+                                            <input type="hidden" name="product_action" value="update">
+                                            <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                                            <div class="mb-3">
+                                                <label class="form-label">Image</label>
+                                                <input type="file" name="image" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Product Name</label>
+                                                <input type="text" name="product_name" class="form-control" value="<?= $row['product_name'] ?>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Price</label>
+                                                <input type="number" name="price" class="form-control" value="<?= $row['price'] ?>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Stock</label>
+                                                <input type="number" name="stock" class="form-control" value="<?= $row['stock'] ?>" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Category</label>
+                                                <select class="form-control" name="category" required>
+                                                    <?php foreach ($categories as $category): ?>
+                                                        <option value="<?= $category['jenis_product'] ?>" <?= $category['id'] == $row['category'] ? 'selected' : '' ?>>
+                                                            <?= $category['jenis_product'] ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Description</label>
+                                                <input type="text" name="description" class="form-control" value="<?= $row['description'] ?>" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Save</button>
+                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </form>
                                 </div>
-                                <form action="aksi_crud.php" method="POST">
-                                    <div class="modal-body">
-                                        <input type="hidden" name="id_mhs" value="<?= $data['id_mhs'] ?>">
-                                        <div class="mb-3">
-                                            <label class="form-label">NIM</label>
-                                            <input type="text" class="form-control" name="nim" value="<?= $data['nim'] ?>" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Nama</label>
-                                            <input type="text" class="form-control" name="nama" value="<?= $data['nama'] ?>" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Alamat</label>
-                                            <textarea class="form-control" name="alamat" rows="3" required><?= $data['alamat'] ?></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Prodi</label>
-                                            <select name="prodi" class="form-select" required>
-                                                <option value="<?= $data['prodi'] ?>"><?= $data['prodi'] ?></option>
-                                                <option value="S1 - Teknik Informatika">S1 - Teknik Informatika</option>
-                                                <option value="D3 - Teknik Informatika">D3 - Teknik Informatika</option>
-                                                <option value="S1 - Sistem Informasi">S1 - Sistem Informasi</option>
-                                                <option value="S1 - Ilmu Komunikasi">S1 - Ilmu Komunikasi</option>
-                                                <option value="S1 - Desain Komunikasi Visual">S1 - Desain Komunikasi Visual</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary" name="update">Update</button>
-                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
-                                    </div>
-                                </form>
                             </div>
                         </div>
-                    </div>
+                    <?php endwhile; ?>
                 </tbody>
             </table>
         </div>
-    </div>
-    </div>
 
-    <!-- Optional JavaScript; choose one of the two! -->
+        <!-- Add Modal -->
+        <div class="modal fade" id="addModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form action="./aksi_crud.php" method="post" enctype="multipart/form-data">
+                        <div class="modal-body">
+                            <input type="hidden" name="product_action" value="create">
+                            <div class="mb-3">
+                                <label class="form-label">Image</label>
+                                <input type="file" name="image" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Product Name</label>
+                                <input type="text" name="product_name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Price</label>
+                                <input type="number" name="price" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Stock</label>
+                                <input type="number" name="stock" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                <select class="form-control" name="category" required>
+                                    <option value="" disabled selected>Select Category</option>
+                                    <?php foreach ($categories as $category): ?>
+                                        <option value="<?= $category['id'] ?>"><?= $category['jenis_product'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <input type="text" name="description" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Add</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-    </script>
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="../js/costum.js"></script>
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-    <!--
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
-        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
-        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
-    </script>
-    -->
 </body>
 
 </html>

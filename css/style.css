@@ -13,6 +13,7 @@
     --toggle-color: #DDD;
     --text-color: #707070;
     --text-primary-color: #000;
+    --tabel-header-color: #5FBDFF;
 
     /*Transition*/
     --tran-02: all 0.2s ease;
@@ -40,6 +41,7 @@ body.dark{
     --toggle-color: #FFF;
     --text-color: #CCC;
     --text-primary-color: #fff;
+    --tabel-header-color: #5FBDFF;
 }
 
 /* ======= Sidebar ======= */
@@ -354,7 +356,7 @@ body.dark .switch::before{
     position: relative;
     left: 250px;
     height: 100vh;
-    width: calc(100% - 250px);
+    width: calc(100vh - 250px);
     transition: var(--tran-05);
     -webkit-transition: var(--tran-05);
     -moz-transition: var(--tran-05);
@@ -370,45 +372,31 @@ body.dark .switch::before{
     color: var(--text-color);
     padding: 8px 40px;
 }
+
+
+.home .content table thead{
+    background-color: var(--tabel-header-color);
+}
+body.dark .home .content table thead{
+    background-color: var(--tabel-header-color);
+}
+
+.home .content table thead,
+.home .content table tbody{
+    font-size: 25px;
+    padding: 1px 5px;
+    color: var(--text-primary-color);
+}
+
+body.dark .home .content table thead,
+body.dark .home .content table tbody{
+    font-size: 25px;
+    padding: 1px 5px;
+    color: var(--text-primary-color);
+}
+
+/* ===== Sidebar close ===== */
 .sidebar.close ~ .home{
     left: 72px;
     width: calc(100% - 72px);
-}
-
-.home .content .content-preview a{
-    text-decoration: none;
-    font-size: 18px;
-    color: var(--text-color);
-}
-
-.home .content .content-preview i{
-    font-size: 25px;
-    padding: 1px 5px;
-}
-
-.home .content-form{
-    left: 80px;
-}
-
-.home .content .content-form label{
-    font-size: 18px;
-    font-weight: 400;
-}
-
-.home .content .content-form input{
-    width: 420px;
-    border-radius: 6px;
-    transition: var(--tran-04);
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    -ms-border-radius: 6px;
-    -o-border-radius: 6px;
-    -webkit-transition: var(--tran-04);
-    -moz-transition: var(--tran-04);
-    -ms-transition: var(--tran-04);
-    -o-transition: var(--tran-04);
-}
-
-.sidebar.close ~ .home .content .content-form input{
-    width: 530px;
 }

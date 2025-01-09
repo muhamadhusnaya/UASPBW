@@ -8,13 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_action'])) {
 
     if ($action === 'create') {
         $name = $_POST['jenis_product'];
-        $image = $_FILES['image']['name'];
+        $image = $_FILES['image'];
 
         $path = "img";
-        $image_ext = pathinfo($image, PATHINFO_EXTENSION);
-        $filename = time().'.'.$image;
+        $image_ext = pathinfo($image['name'], PATHINFO_EXTENSION);
+        $filename = $image['name'];
 
-        $sql = "INSERT INTO categories (jenis_product, image) VALUES ('$name', '$image')";
+        $sql = "INSERT INTO categories (jenis_product, image) VALUES ('$name', '$filename')";
 
         if ($conn->query($sql) === TRUE) {
             header("Location: Category.php");
@@ -27,12 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_action'])) {
     if ($action === 'update') {
         $id = $_POST['id'];
         $name = $_POST['jenis_product'];
-        $image = $_POST['image'];
+        $image = $_FILES['image'];
 
-        $sql = "UPDATE categories SET jenis_product = '$name', image = '$image' WHERE id = $id";
+
+        $path = "img";
+        $image_ext = pathinfo($image, PATHINFO_EXTENSION);
+        $filename = time().'.'.$image;
+
+        $sql = "UPDATE categories SET jenis_product = '$name', image = '$filename' WHERE id = $id";
 
         if ($conn->query($sql) === TRUE) {
-            header("Location: categories.php");
+            header("Location: Category.php");
             exit;
         } else {
             echo "Error: " . $conn->error;
@@ -42,9 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_action'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['category_action']) && $_GET['category_action'] === 'delete') {
     $id = $_GET['id'];
+    var_dump($id);
     $sql = "DELETE FROM categories WHERE id = $id";
     if ($conn->query($sql) === TRUE) {
-        header("Location: categories.php");
+        header("Location: Category.php");
         exit;
     } else {
         echo "Error: " . $conn->error;
@@ -52,70 +58,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['category_action']) && $
 }
 
 // ===== CRUD PRODUCT =====
-// if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_action'])) {
-//     $action = $_POST['product_action'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['product_action'])) {
+    $action = $_POST['product_action'];
+    
+    if ($action === 'create') {
+        $productName = $_POST['product_name'];
+        $price = $_POST['price'];
+        $stock = $_POST['stock'];
+        $category = $_POST['category'];
+        $description = $_POST['description'];
+        $image = $_FILES['image'];
+        var_dump($productName);
+        
+        // Handle file upload
+        $path = "img";
+        $image_ext = pathinfo($image['name'], PATHINFO_EXTENSION);
+        $filename = $image['name'];
 
-//     if ($action === 'create') {
-//         $productName = $_POST['productName'];
-//         $price = $_POST['price'];
-//         $stock = $_POST['stock'];
-//         $category = $_POST['category'];
+        $sql = "INSERT INTO products (image, product_name, price, stock, category) VALUES ('$filename', '$productName', $price, $stock, '$category')";
 
-//         // Handle file upload
-//         $image = $_FILES['image']['name'];
-//         $target_dir = "uploads/";
-//         $target_file = $target_dir . basename($image);
-//         move_uploaded_file($_FILES['image']['tmp_name'], $target_file);
+        if ($conn->query($sql) === TRUE) {
+            header("Location: Product.php");
+            exit;
+        } else {
+            echo "Error: " . $conn->error;
+        }
+    }
 
-//         $sql = "INSERT INTO products (image, product_name, price, stock, category) VALUES ('$image', '$productName', $price, $stock, '$category')";
+    if ($action === 'update') {
+        $id = $_POST['id'];
+        $productName = $_POST['productName'];
+        $price = $_POST['price'];
+        $stock = $_POST['stock'];
+        $category = $_POST['category'];
 
-//         if ($conn->query($sql) === TRUE) {
-//             header("Location: index.php");
-//             exit;
-//         } else {
-//             echo "Error: " . $conn->error;
-//         }
-//     }
+        // Handle file upload
+        if (!empty($_FILES['image']['name'])) {
+            $image = $_FILES['image']['name'];
+            $target_dir = "uploads/";
+            $target_file = $target_dir . basename($image);
+            move_uploaded_file($_FILES['image']['tmp_name'], $target_file);
+            $imageSQL = ", image = '$image'";
+        } else {
+            $imageSQL = "";
+        }
 
-//     if ($action === 'update') {
-//         $id = $_POST['id'];
-//         $productName = $_POST['productName'];
-//         $price = $_POST['price'];
-//         $stock = $_POST['stock'];
-//         $category = $_POST['category'];
+        $sql = "UPDATE products SET product_name = '$productName', price = $price, stock = $stock, category = '$category' $imageSQL WHERE id = $id";
 
-//         // Handle file upload
-//         if (!empty($_FILES['image']['name'])) {
-//             $image = $_FILES['image']['name'];
-//             $target_dir = "uploads/";
-//             $target_file = $target_dir . basename($image);
-//             move_uploaded_file($_FILES['image']['tmp_name'], $target_file);
-//             $imageSQL = ", image = '$image'";
-//         } else {
-//             $imageSQL = "";
-//         }
+        if ($conn->query($sql) === TRUE) {
+            header("Location: Product.php");
+            exit;
+        } else {
+            echo "Error: " . $conn->error;
+        }
+    }
+}
 
-//         $sql = "UPDATE products SET product_name = '$productName', price = $price, stock = $stock, category = '$category' $imageSQL WHERE id = $id";
-
-//         if ($conn->query($sql) === TRUE) {
-//             header("Location: index.php");
-//             exit;
-//         } else {
-//             echo "Error: " . $conn->error;
-//         }
-//     }
-// }
-
-// if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['product_action']) && $_GET['product_action'] === 'delete') {
-//     $id = $_GET['id'];
-//     $sql = "DELETE FROM products WHERE id = $id";
-//     if ($conn->query($sql) === TRUE) {
-//         header("Location: index.php");
-//         exit;
-//     } else {
-//         echo "Error: " . $conn->error;
-//     }
-// }
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['product_action']) && $_GET['product_action'] === 'delete') {
+    $id = $_GET['id'];
+    $sql = "DELETE FROM products WHERE id = $id";
+    if ($conn->query($sql) === TRUE) {
+        header("Location: Product.php");
+        exit;
+    } else {
+        echo "Error: " . $conn->error;
+    }
+}
     
 
 

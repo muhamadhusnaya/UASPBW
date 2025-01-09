@@ -22,7 +22,7 @@
     <title>Dashboard</title>
 </head>
 <body>
-<nav class="sidebar close">
+    <nav class="sidebar close">
         <header>
             <div class="image-text">
                 <span class="image">
@@ -137,7 +137,7 @@
                         <td><?= $row['id'] ?></td>
                         <td>
                             <?php if (!empty($row['image'])) : ?>
-                                <img width="60px" src="../img/<?= $row['image'] ?>">
+                                <img width="60px" src="../img/Category/<?= $row['image'] ?>">
                             <?php else : ?>
                                 No Image
                             <?php endif; ?>
@@ -145,7 +145,7 @@
                         <td><?= $row['jenis_product'] ?></td>
                         <td>
                             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal<?= $row['id'] ?>">Edit</button>
-                            <a href="aksi.php?category_action=delete&id=<?= $row['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                            <a href="aksi_crud.php?category_action=delete&id=<?= $row['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
                         </td>
                     </tr>
 
@@ -166,7 +166,7 @@
                                             <input type="text" name="jenis_product" class="form-control" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Image URL</label>
+                                            <label class="form-label">Upload Image</label>
                                             <input type="file" name="image" class="form-control">
                                         </div>
                                     </div>
@@ -191,7 +191,7 @@
                         <h5 class="modal-title">Add Category</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <form action="./aksi_crud.php" method="post">
+                    <form action="./aksi_crud.php" method="post" enctype="multipart/form-data">
                         <div class="modal-body">
                             <input type="hidden" name="category_action" value="create">
                             <div class="mb-3">
@@ -199,9 +199,8 @@
                                 <input type="text" name="jenis_product" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Image URL</label>
-                                <input type="file
-                                " name="image" class="form-control">
+                                <label class="form-label">Upload Image</label>
+                                <input type="file" name="image" class="form-control">
                             </div>
                         </div>
                         <div class="modal-footer">
