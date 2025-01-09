@@ -200,8 +200,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Image URL</label>
-                                <input type="file
-                                " name="image" class="form-control">
+                                <input type="file" name="image" class="form-control">
                             </div>
                         </div>
                         <div class="modal-footer">
